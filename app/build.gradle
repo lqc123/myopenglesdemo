@@ -17,9 +17,10 @@ android {
 //                cppFlags ""
                 arguments '-DANDROID_STL=c++_static'
             }
-            ndk {
-                abiFilters  'armeabi-v7a'
-            }
+
+        }
+        ndk {
+            abiFilters  'armeabi-v7a'
         }
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -29,11 +30,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    sourceSets {
-        main {
-            jniLibs.srcDirs = ['libs']
-        }
-    }
+//    sourceSets {
+//        main {
+//            jniLibs.srcDirs = ['libs']
+//        }
+//    }
     externalNativeBuild {
         cmake {
             path "CMakeLists.txt"

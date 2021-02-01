@@ -11,7 +11,7 @@ void throwExp(JNIEnv *env,char *typeName, char *desc){
    }
 }
 
-extern "C" JNIEXPORT void JNICALL Java_com_example_myapplication_NativeActivity_drawColor(JNIEnv *env, jobject, jobject surface, jint color){
+extern "C" JNIEXPORT void JNICALL Java_com_lqc_myopenglesdemo_NativeActivity_drawColor(JNIEnv *env, jobject, jobject surface, jint color){
     int a=color>>24&0xff;
     int r=color>>16&0xff;
     int g=color>>8&0xff;

@@ -21,6 +21,7 @@ public class TextureUtils {
     private static final String TAG = "TextureUtils";
 
     public static int loadTexture(Context context, int resourceId) {
+
         final int[] textureIds = new int[1];
         GLES30.glGenTextures(1, textureIds, 0);
         if (textureIds[0] == 0) {

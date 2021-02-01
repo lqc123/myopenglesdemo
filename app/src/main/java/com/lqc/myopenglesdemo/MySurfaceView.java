@@ -5,16 +5,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 
 import com.example.myapplication.R;
-
-import java.io.IOException;
 
 public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
     private static final String TAG = "MySurfaceView";
@@ -51,6 +47,7 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
         mSurfaceHolder = getHolder();
         // 注册回调事件
         mSurfaceHolder.addCallback(this);
+
 
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setStyle(Paint.Style.STROKE);

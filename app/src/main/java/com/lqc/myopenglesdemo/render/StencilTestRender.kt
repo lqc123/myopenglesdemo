@@ -14,9 +14,9 @@ import javax.microedition.khronos.opengles.GL10
  * FileName: MyRender
  * Author: liuqiancheng
  * Date: 2019/10/10 15:24
- * Description:基础图形绘制
+ * Description:模板测试
  */
-internal class SimpleRender : GLSurfaceView.Renderer {
+internal class StencilTestRender : GLSurfaceView.Renderer {
 
     /**
      * 点的坐标
@@ -34,40 +34,6 @@ internal class SimpleRender : GLSurfaceView.Renderer {
         0.5f, 0.5f, 0.0f
     )
 
-    /**
-     * 顶点颜色
-     */
-    private val vertexColors =
-        floatArrayOf(
-            1.0f, 1.0f, 1.0f, 1.0f,
-            1.0f, 1.0f, 1.0f, 1.0f,
-            1.0f, 1.0f, 1.0f, 1.0f,
-            1.0f, 1.0f, 1.0f, 1.0f
-        )
-
-    private val vertexColors2 =
-        floatArrayOf(
-            1.0f, 1.0f, 1f, 1.0f,
-            1.0f, 1.0f, 1f, 1.0f,
-            1.0f, 1.0f, 1f, 1.0f,
-            1.0f, 1.0f, 1f, 1.0f
-        )
-
-    private val redColor =
-        floatArrayOf(
-            1f, 0f, 0f, 1f,
-            1f, 0f, 0f, 1f,
-            1f, 0f, 0f, 1f,
-            1f, 0f, 0f, 1f
-        )
-
-    private val blueColor =
-        floatArrayOf(
-            1f, 1f, 0f, 0f,
-            1f, 1f, 0f, 0f,
-            1f, 1f, 0f, 0f,
-            1f, 1f, 0f, 0f
-        )
 
     /**
      * 顶点索引
@@ -84,70 +50,16 @@ internal class SimpleRender : GLSurfaceView.Renderer {
     val vertexPositionBuffer2 =
         ByteBuffer.allocateDirect(vertexPoints2.size * 4).order(ByteOrder.nativeOrder())
             .asFloatBuffer().put(vertexPoints2).position(0)
-    val vertexColorBuffer =
-        ByteBuffer.allocateDirect(vertexColors.size * 4).order(ByteOrder.nativeOrder())
-            .asFloatBuffer().put(vertexColors).position(0)
-    val vertexColorBuffer2 =
-        ByteBuffer.allocateDirect(vertexColors2.size * 4).order(ByteOrder.nativeOrder())
-            .asFloatBuffer().put(vertexColors2).position(0)
-
-    val red =
-        ByteBuffer.allocateDirect(redColor.size * 4).order(ByteOrder.nativeOrder())
-            .asFloatBuffer().put(redColor).position(0)
-
-    val blue =
-        ByteBuffer.allocateDirect(blueColor.size * 4).order(ByteOrder.nativeOrder())
-            .asFloatBuffer().put(blueColor).position(0)
 
     val indexBuffer =
         ByteBuffer.allocateDirect(index.size * 2).order(ByteOrder.nativeOrder())
             .asShortBuffer().put(index).position(0)
-
-    /**
-     * es2.0
-     * attribute 传入的属性值
-     * varying 多个着色器可用于相互传值
-     * uniform 统一变量
-     *
-     * es3.0
-     * in 传入的属性值
-     * out 多个着色器可用于相互传值
-     *  uniform 统一变量
-     */
-
-
-    /**
-     * 顶点着色器
-     */
-//    private val vertexShader = (
-//            "#version 300 es \n" +
-//                    "layout (location = 0) in vec4 vPosition;\n"
-//                    + "layout (location = 1) in vec4 aColor;\n"
-//                    + "out vec4 vColor;\n"
-//                    + "void main() { \n"
-//                    + "gl_Position  = vPosition;\n"
-//                    + "gl_PointSize = 30.0;\n"
-//                    + "vColor = aColor;\n"
-//                    + "}\n")
 
     private val vertexShader = (
             "attribute  vec4 vPosition;\n"
                     + "void main() { \n"
                     + "gl_Position  = vPosition;\n"
                     + "}\n")
-
-    /**
-     * 片段着色器
-     */
-//    private val fragmentShader = (
-//            "#version 300 es \n" +
-//                    "precision mediump float;\n"
-//                    + "in vec4 vColor;\n"
-//                    + "out vec4 fragColor;\n"
-//                    + "void main() { \n"
-//                    + "fragColor = vColor; \n"
-//                    + "}\n")
-
 
     private val fragmentShader = (
             "precision mediump float;\n"
@@ -159,12 +71,31 @@ internal class SimpleRender : GLSurfaceView.Renderer {
 
     override fun onDrawFrame(gl: GL10?) {
 
-        GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
+//        disable()
+        GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT or GLES30.GL_DEPTH_BUFFER_BIT or GLES30.GL_STENCIL_BUFFER_BIT)
 
+//        GLES30.glStencilMask(0x00);	// 保证在绘制地板的时候不会更新模板缓冲
 
+        enableDebugWrite()
         drawRect(vertexPositionBuffer, floatArrayOf(1f, 1f, 1f, 1f))
 
+        enableDebugWrite()
+        drawRect(vertexPositionBuffer, floatArrayOf(1f, 1f, 1f, 1f))
+
+        enableDebugWrite()
+        drawRect(vertexPositionBuffer, floatArrayOf(1f, 1f, 1f, 1f))
+
+        enableDebugWrite()
+        drawRect(vertexPositionBuffer, floatArrayOf(1f, 1f, 1f, 1f))
+
+        enableDebugTest(1, false)
         drawRect(vertexPositionBuffer2, floatArrayOf(0f, 0f, 1f, 0f))
+        enableDebugTest(2, false)
+        drawRect(vertexPositionBuffer2, floatArrayOf(0f, 1f, 0f, 0f))
+        enableDebugTest(3, true)
+        drawRect(vertexPositionBuffer2, floatArrayOf(1f, 0f, 0f, 0f))
+
+        GLES30.glDisable(GLES30.GL_STENCIL_TEST)
 
 
     }
@@ -201,6 +132,49 @@ internal class SimpleRender : GLSurfaceView.Renderer {
         )
         //在OpenGLES环境中使用程序片段
         GLES30.glUseProgram(mProgram)
+    }
+
+    fun enableDebugWrite() {
+        GLES30.glEnable(GLES30.GL_STENCIL_TEST)
+        //用于已储存的模板值和ref之间进行比较,所有的片段都应该更新模板缓冲
+        GLES30.glStencilFunc(GLES30.GL_ALWAYS, 0x1, 0xff)
+        // The test always passes so the first two values are meaningless
+        GLES30.glStencilOp(GLES30.GL_KEEP, GLES30.GL_KEEP, GLES30.GL_INCR);
+        GLES30.glColorMask(true, true, true, true)
+        //启用模板缓冲写入
+        GLES30.glStencilMask(0xff)
+
+    }
+
+    fun enableDebugTest(value: Int, greater: Boolean) {
+        GLES30.glEnable(GLES30.GL_STENCIL_TEST)
+        GLES30.glStencilFunc(
+            if (greater) GLES30.GL_LESS else GLES30.GL_EQUAL,
+            value,
+            0xff
+        )
+        // We only want to test, let's keep everything
+        GLES30.glStencilOp(GLES30.GL_KEEP, GLES30.GL_KEEP, GLES30.GL_KEEP)
+        //禁止模板缓冲的写入
+        GLES30.glStencilMask(0)
+
+    }
+    fun enableWrite(incrementThreshold:Int) {
+        GLES30.glEnable(GLES30.GL_STENCIL_TEST)
+        if (incrementThreshold > 0) {
+            GLES30.glStencilFunc(GLES30.GL_ALWAYS, 1, 0xff);
+            // The test always passes so the first two values are meaningless
+            GLES30.glStencilOp(GLES30.GL_INCR, GLES30.GL_INCR, GLES30.GL_INCR);
+        } else {
+            GLES30.glStencilFunc(GLES30.GL_ALWAYS,1, 0xff);
+            // The test always passes so the first two values are meaningless
+            GLES30.glStencilOp(GLES30.GL_KEEP, GLES30.GL_KEEP,GLES30. GL_REPLACE);
+        }
+        GLES30.glColorMask(false,false,false,false);
+        GLES30. glStencilMask(0xff);
+    }
+    fun disable() {
+        GLES30.glDisable(GLES30.GL_STENCIL_TEST);
     }
 
 

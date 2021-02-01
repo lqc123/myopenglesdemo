@@ -80,7 +80,7 @@ void play(JNIEnv *env, jobject surface, jstring path) {
 }
 
 JNIEXPORT void JNICALL
-Java_com_example_myapplication_PlayActivity_play(JNIEnv *env, jobject, jobject surface,
+Java_com_lqc_myopenglesdemo_PlayActivity_play(JNIEnv *env, jobject, jobject surface,
                                                  jstring path) {
 
     const char *url = env->GetStringUTFChars(path, JNI_FALSE);

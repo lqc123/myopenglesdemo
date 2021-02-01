@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.lqc.myopenglesdemo.render.CameraTextureRender
 import com.lqc.myopenglesdemo.render.SimpleRender
+import com.lqc.myopenglesdemo.render.StencilTestRender
 import com.lqc.myopenglesdemo.render.TextureRender
 import com.yanzhenjie.permission.AndPermission
 import com.yanzhenjie.permission.runtime.Permission
@@ -39,12 +40,13 @@ class MainActivity : AppCompatActivity() {
             Item(
                 "简单图形",
                 SimpleRender::class.java.name
+            )  ,
+            Item(
+                "模板测试",
+                StencilTestRender::class.java.name
             )
         )
-//        val datas= ArrayList<Item>()
-//        for (i in 1..29) {
-//            datas.add(Item(i.toString(),i.toString()))
-//        }
+
         AndPermission.with(this)
             .runtime()
             .permission(Permission.CAMERA,Permission.READ_EXTERNAL_STORAGE)
