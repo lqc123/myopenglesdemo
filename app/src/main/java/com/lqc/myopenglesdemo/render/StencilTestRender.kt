@@ -30,6 +30,13 @@ internal class StencilTestRender : GLSurfaceView.Renderer {
     private val vertexPoints2 = floatArrayOf(
         -0.5f, 0.5f, 0.0f,
         -0.5f, -0.5f, 0.0f,
+        1f, -1f, 0.0f,
+        0.5f, 0.5f, 0.0f
+    )
+
+    private val vertexPoints3 = floatArrayOf(
+        -1f, 1f, 0.0f,
+        -0.5f, -0.5f, 0.0f,
         0.5f, -0.5f, 0.0f,
         0.5f, 0.5f, 0.0f
     )
@@ -50,6 +57,10 @@ internal class StencilTestRender : GLSurfaceView.Renderer {
     val vertexPositionBuffer2 =
         ByteBuffer.allocateDirect(vertexPoints2.size * 4).order(ByteOrder.nativeOrder())
             .asFloatBuffer().put(vertexPoints2).position(0)
+
+    val vertexPositionBuffer3 =
+        ByteBuffer.allocateDirect(vertexPoints3.size * 4).order(ByteOrder.nativeOrder())
+            .asFloatBuffer().put(vertexPoints3).position(0)
 
     val indexBuffer =
         ByteBuffer.allocateDirect(index.size * 2).order(ByteOrder.nativeOrder())
@@ -78,26 +89,33 @@ internal class StencilTestRender : GLSurfaceView.Renderer {
 
         enableDebugWrite()
         drawRect(vertexPositionBuffer, floatArrayOf(1f, 1f, 1f, 1f))
+        overdraw(vertexPositionBuffer)
+        enableDebugWrite()
+        drawRect(vertexPositionBuffer2, floatArrayOf(1f, 1f, 1f, 1f))
+        overdraw(vertexPositionBuffer2)
 
         enableDebugWrite()
-        drawRect(vertexPositionBuffer, floatArrayOf(1f, 1f, 1f, 1f))
+        drawRect(vertexPositionBuffer3, floatArrayOf(1f, 1f, 1f, 1f))
+        overdraw(vertexPositionBuffer3)
 
-        enableDebugWrite()
-        drawRect(vertexPositionBuffer, floatArrayOf(1f, 1f, 1f, 1f))
 
-        enableDebugWrite()
-        drawRect(vertexPositionBuffer, floatArrayOf(1f, 1f, 1f, 1f))
 
-        enableDebugTest(1, false)
-        drawRect(vertexPositionBuffer2, floatArrayOf(0f, 0f, 1f, 0f))
-        enableDebugTest(2, false)
-        drawRect(vertexPositionBuffer2, floatArrayOf(0f, 1f, 0f, 0f))
-        enableDebugTest(3, true)
-        drawRect(vertexPositionBuffer2, floatArrayOf(1f, 0f, 0f, 0f))
 
         GLES30.glDisable(GLES30.GL_STENCIL_TEST)
 
 
+    }
+
+    private fun overdraw(vertex: Buffer) {
+        //0x2f0000ff, 0x4fffff00, 0x5fff8ad8, 0x7fff0000
+        enableDebugTest(1, false)
+        drawRect(vertex, floatArrayOf(0f, 0f, 1f, Integer.parseInt("2f",16) / 255.0f))
+        enableDebugTest(2, false)
+        drawRect(vertex, floatArrayOf(0f, 1f, 0f, Integer.parseInt("2f",16) / 255.0f))
+        enableDebugTest(3, false)
+        drawRect(vertex, floatArrayOf(1f, 0f, 0f, Integer.parseInt("2f",16) / 255.0f))
+        enableDebugTest(4, true)
+        drawRect(vertex, floatArrayOf(1f, 0f, 0f, Integer.parseInt("3f",16) / 255.0f))
     }
 
     private fun drawRect(vertex: Buffer, color: FloatArray) {
@@ -117,6 +135,8 @@ internal class StencilTestRender : GLSurfaceView.Renderer {
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
         GLES30.glViewport(0, 0, width, height)
+        GLES30.glEnable(GLES30.GL_BLEND)
+        GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA)
     }
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
@@ -137,7 +157,7 @@ internal class StencilTestRender : GLSurfaceView.Renderer {
     fun enableDebugWrite() {
         GLES30.glEnable(GLES30.GL_STENCIL_TEST)
         //用于已储存的模板值和ref之间进行比较,所有的片段都应该更新模板缓冲
-        GLES30.glStencilFunc(GLES30.GL_ALWAYS, 0x1, 0xff)
+        GLES30.glStencilFunc(GLES30.GL_ALWAYS, 0x1, 0xffffffff.toInt())
         // The test always passes so the first two values are meaningless
         GLES30.glStencilOp(GLES30.GL_KEEP, GLES30.GL_KEEP, GLES30.GL_INCR);
         GLES30.glColorMask(true, true, true, true)
@@ -151,7 +171,7 @@ internal class StencilTestRender : GLSurfaceView.Renderer {
         GLES30.glStencilFunc(
             if (greater) GLES30.GL_LESS else GLES30.GL_EQUAL,
             value,
-            0xff
+            0xffffffff.toInt()
         )
         // We only want to test, let's keep everything
         GLES30.glStencilOp(GLES30.GL_KEEP, GLES30.GL_KEEP, GLES30.GL_KEEP)

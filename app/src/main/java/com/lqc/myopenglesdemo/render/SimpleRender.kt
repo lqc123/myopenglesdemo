@@ -161,19 +161,15 @@ internal class SimpleRender : GLSurfaceView.Renderer {
 
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT)
 
-
         drawRect(vertexPositionBuffer, floatArrayOf(1f, 1f, 1f, 1f))
-
-        drawRect(vertexPositionBuffer2, floatArrayOf(0f, 0f, 1f, 0f))
+        //rgba
+        drawRect(vertexPositionBuffer2, floatArrayOf(1f, 0f, 0f, 0.5f))
 
 
     }
 
     private fun drawRect(vertex: Buffer, color: FloatArray) {
         GLES30.glVertexAttribPointer(0, 3, GLES30.GL_FLOAT, false, 0, vertex)
-        // get handle to fragment shader's vColor member
-
-        // get handle to fragment shader's vColor member
        val colorHandle = GLES20.glGetUniformLocation(mProgram, "vColor")
 
         GLES20.glUniform4fv(colorHandle, 1, color, 0)
@@ -186,6 +182,9 @@ internal class SimpleRender : GLSurfaceView.Renderer {
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
         GLES30.glViewport(0, 0, width, height)
+        //显示透明度需要开启混合
+        GLES30.glEnable(GLES30.GL_BLEND)
+        GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA)
     }
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {

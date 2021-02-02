@@ -37,7 +37,7 @@ class NativeActivity : AppCompatActivity() {
             }
 
             override fun surfaceCreated(holder: SurfaceHolder?) {
-                drawColor(sv.holder.surface,Color.WHITE)
+                drawColor(sv.holder.surface,Color.RED)
             }
 
 
